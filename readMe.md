@@ -14,6 +14,8 @@
 ### ✔Fluid Simulation
 ### ✔N-Body Simulation
 ### ✔Interacte with Customize Mesh
+### ✔Live Window Preview based on OpenGL
+### ✔ImGui
 
 ## Credits
 > This Project Depends on the Following Libs
