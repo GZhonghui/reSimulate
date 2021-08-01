@@ -1,14 +1,21 @@
 # reSimulate
-
 ![reSimulate](readMe/reSimulate.png)
-
-## reFamily
-- reRender
-- reEngine
+---
+> View This Page in [中文](https://github.com/GZhonghui/reSimulate/blob/main/readMe/readMe_CN.md)/[日本語](https://github.com/GZhonghui/reSimulate/blob/main/readMe/readMe_JP.md)  
+> More Projects from the reFamily [**reRender**](https://github.com/GZhonghui/reRender)/[**reEngine**](https://github.com/GZhonghui/reEngine)
 
 ## About
-reSimulate是一个物理解算器，底层使用C++编写，提供C++接口
+**reSimulate** is a Simulater
 
 ## Features
-- 流体模拟
-- 天体模拟
+### ✔CUDA Backend
+### ✔CPU Multi-Threaded Backend
+### ✔Rigid Body Simulation
+### ✔Fluid Simulation
+### ✔N-Body Simulation
+### ✔Interacte with Customize Mesh
+
+## Credits
+> This Project Depends on the Following Libs
+* Assimp
+* Eigen
