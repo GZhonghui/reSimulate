@@ -1,11 +1,11 @@
 # reSimulate
 ![reSimulate](readMe/reSimulate.png)
 ---
-> View This Page in [中文](https://github.com/GZhonghui/reSimulate/blob/main/readMe/readMe_CN.md)/[日本語](https://github.com/GZhonghui/reSimulate/blob/main/readMe/readMe_JP.md)  
+> View This Page in [中文](readMe/readMe_CN.md)/[日本語](readMe/readMe_JP.md)  
 > More Projects from the reFamily [**reRender**](https://github.com/GZhonghui/reRender)/[**reEngine**](https://github.com/GZhonghui/reEngine)
 
 ## About
-**reSimulate** is a Simulater
+**reSimulate** is a Physical Simulater
 
 ## Features
 ### ✔CUDA Backend
