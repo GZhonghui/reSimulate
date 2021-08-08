@@ -20,4 +20,11 @@
 ## Credits
 > This Project Depends on the Following Libs
 * Assimp
+* Boost
+* CUDA
 * Eigen
+* Glad
+* GLFW
+* ImGui
+* OpenGL Core
+* STB
