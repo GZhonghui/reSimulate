@@ -1,5 +1,3 @@
+#include"EngineCore.h"
 
-int main()
-{
-    return 0;
-}
+int main() { return SIMULATE_CORE; }
