@@ -5,14 +5,14 @@
 
 #define SIMULATE_CORE SimulateCore()
 
-class Slmulater
+class Slmulator
 {
 protected:
     GLFWwindow* m_MainWindow;
 
 public:
-    Slmulater() = default;
-    ~Slmulater() = default;
+    Slmulator() = default;
+    ~Slmulator() = default;
 
 public:
     void Init();

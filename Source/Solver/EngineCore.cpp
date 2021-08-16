@@ -1,6 +1,6 @@
 #include"EngineCore.h"
 
-void Slmulater::Init()
+void Slmulator::Init()
 {
     // Init GLFW
     glfwInit();
@@ -27,7 +27,7 @@ void Slmulater::Init()
     // Init GLFW
 }
 
-void Slmulater::Loop()
+void Slmulator::Loop()
 {
     while (!glfwWindowShouldClose(m_MainWindow))
     {
@@ -40,7 +40,7 @@ void Slmulater::Loop()
     }
 }
 
-void Slmulater::Exit()
+void Slmulator::Exit()
 {
     // Destroy GLFW
     glfwDestroyWindow(m_MainWindow);
@@ -50,7 +50,7 @@ void Slmulater::Exit()
 
 int SimulateCore()
 {
-    auto MainApp = std::make_unique<Slmulater>();
+    auto MainApp = std::make_unique<Slmulator>();
 
     Out::Log(pType::MESSAGE, "Initing...");
     MainApp->Init();
