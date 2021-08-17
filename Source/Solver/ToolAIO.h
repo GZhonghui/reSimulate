@@ -7,6 +7,8 @@
 #include<algorithm>
 #include<cstdarg>
 #include<cstdint>
+#include<cstring>
+#include<string>
 #include<chrono>
 #include<vector>
 #include<cstdio>

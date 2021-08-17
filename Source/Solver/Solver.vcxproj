@@ -159,6 +159,7 @@
     <ClInclude Include="Config.h" />
     <ClInclude Include="EngineCore.h" />
     <ClInclude Include="MathAIO.h" />
+    <ClInclude Include="Shader.h" />
     <ClInclude Include="ToolAIO.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
