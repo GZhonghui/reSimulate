@@ -1,6 +1,7 @@
 #include"Fluid.h"
 
 #include"Config.h"
+#include"PBF.h"
 
 std::shared_ptr<std::vector<Eigen::Vector3d>> G_ParticleBuffer;
 
