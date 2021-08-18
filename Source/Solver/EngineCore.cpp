@@ -41,7 +41,7 @@ void Slmulator::LoadSkybox()
     int textureWidth, textureHeight, textureChannels;
     unsigned char* textureData;
 
-    stbi_set_flip_vertically_on_load(true);
+    stbi_set_flip_vertically_on_load(false);
 
     const std::string SkyboxPath("../Asset/Creek/");
 
@@ -53,19 +53,19 @@ void Slmulator::LoadSkybox()
     glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_RGB, textureWidth, textureHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData);
     stbi_image_free(textureData);
 
-    textureData = stbi_load((SkyboxPath + "posY.jpg").c_str(), &textureWidth, &textureHeight, &textureChannels, 3);
+    textureData = stbi_load((SkyboxPath + "posZ.jpg").c_str(), &textureWidth, &textureHeight, &textureChannels, 3);
     glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGB, textureWidth, textureHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData);
     stbi_image_free(textureData);
 
-    textureData = stbi_load((SkyboxPath + "negY.jpg").c_str(), &textureWidth, &textureHeight, &textureChannels, 3);
+    textureData = stbi_load((SkyboxPath + "negZ.jpg").c_str(), &textureWidth, &textureHeight, &textureChannels, 3);
     glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_RGB, textureWidth, textureHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData);
     stbi_image_free(textureData);
 
-    textureData = stbi_load((SkyboxPath + "posZ.jpg").c_str(), &textureWidth, &textureHeight, &textureChannels, 3);
+    textureData = stbi_load((SkyboxPath + "posY.jpg").c_str(), &textureWidth, &textureHeight, &textureChannels, 3);
     glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_RGB, textureWidth, textureHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData);
     stbi_image_free(textureData);
 
-    textureData = stbi_load((SkyboxPath + "negZ.jpg").c_str(), &textureWidth, &textureHeight, &textureChannels, 3);
+    textureData = stbi_load((SkyboxPath + "negY.jpg").c_str(), &textureWidth, &textureHeight, &textureChannels, 3);
     glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGB, textureWidth, textureHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData);
     stbi_image_free(textureData);
 
@@ -172,7 +172,7 @@ void Slmulator::LoadSkybox()
 
 void Slmulator::RenderSkybox()
 {
-    double SumTime = glfwGetTime() * 0.1;
+    double SumTime = glfwGetTime() * 0.3;
 
     glDepthMask(GL_FALSE);
 
@@ -183,11 +183,10 @@ void Slmulator::RenderSkybox()
 
     auto projection = glm::perspective(glm::radians(45.0f), 16.0f / 9, 0.1f, 100.0f);
     auto view = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, 0.0f, (float)SumTime));
-    //view = glm::mat4(glm::mat3(view));
 
-
-
-    view = glm::lookAt(glm::vec3(0, 0, 0), glm::vec3(0, std::sin(SumTime), std::cos(SumTime)), glm::vec3(0, 0, 1));
+    //view = glm::lookAt(glm::vec3(0, 0, 0), glm::vec3(std::cos(SumTime), 0, std::sin(SumTime)), glm::vec3(0, 1, 0));
+    view = glm::lookAt(glm::vec3(0, 0, 0), glm::vec3(0, 0, -1), glm::vec3(0, 1, 0));
+    view = glm::mat4(glm::mat3(view));
 
     glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));
@@ -210,6 +209,21 @@ void Slmulator::DestroySkybox()
 
     glDeleteVertexArrays(1, &m_SkyboxVAOID);
     glDeleteBuffers(1, &m_SkyboxVBOID);
+}
+
+void Slmulator::LoadScene()
+{
+
+}
+
+void Slmulator::RenderScene()
+{
+
+}
+
+void Slmulator::DestroyScene()
+{
+
 }
 
 void Slmulator::InitOpenGL()
@@ -304,6 +318,7 @@ void Slmulator::Init()
     InitOpenGL();
 
     LoadSkybox();
+    LoadScene();
 }
 
 void Slmulator::Loop()
@@ -321,6 +336,7 @@ void Slmulator::Loop()
 void Slmulator::Exit()
 {
     DestroySkybox();
+    DestroyScene();
 
     DestroyOpenGL();
 

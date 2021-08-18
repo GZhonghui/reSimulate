@@ -17,6 +17,11 @@ protected:
     uint32_t m_SkyboxVAOID;
     uint32_t m_SkyboxVBOID;
 
+    uint32_t m_GroundTextureID;
+    uint32_t m_GroundShaderProgramID;
+    uint32_t m_GroundVAOID;
+    uint32_t m_GroundVBOID;
+
     uint32_t m_MainShaderProgramID;
     uint32_t m_MainVAOID;
     uint32_t m_MainVBOID;
@@ -32,6 +37,10 @@ protected:
     void LoadSkybox();
     void RenderSkybox();
     void DestroySkybox();
+
+    void LoadScene();
+    void RenderScene();
+    void DestroyScene();
 
     void InitOpenGL();
     void DestroyOpenGL();
