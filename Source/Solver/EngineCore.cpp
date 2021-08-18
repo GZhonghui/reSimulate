@@ -33,6 +33,59 @@ void Simulator::DestroyGLFW()
     glfwTerminate();
 }
 
+void Simulator::InitUI()
+{
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+
+    ImGui::StyleColorsClassic();
+
+    ImGui_ImplGlfw_InitForOpenGL(m_MainWindow, true);
+    ImGui_ImplOpenGL3_Init("#version 330 core");
+}
+
+void Simulator::RenderUI()
+{
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    auto LogWinFlag =
+        ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse |
+        ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoBringToFrontOnFocus |
+        ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove;
+
+    ImGui::SetNextWindowPos(ImVec2(8, 8), ImGuiCond_Always);
+
+    if (ImGui::Begin("reSimulate",nullptr, LogWinFlag))
+    {
+        int FPS = -1;
+        try
+        {
+            FPS = static_cast<int>(1.0 / m_FrameTime);
+        }
+        catch (...) {}
+
+        ImGui::Text("FPS : %d (%lfs)", FPS, m_FrameTime);
+
+        ImGui::Separator();
+
+        ImGui::Text("Particles Number : %d", m_FluidSpriteCount);
+
+        ImGui::End();
+    }
+
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void Simulator::DestroyUI()
+{
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+}
+
 void Simulator::LoadSkybox()
 {
     glGenTextures(1, &m_SkyboxTextureID);
@@ -396,16 +449,16 @@ void Simulator::LoadRenderable()
 
     uint32_t floatIndex = 0;
 
-    for (auto i = m_Particles->begin(); i != m_Particles->end(); ++i)
+    for (auto i = m_FluidParticles->begin(); i != m_FluidParticles->end(); ++i)
     {
-        m_ParticlesBuffer[floatIndex++] = static_cast<float>(i->x());
-        m_ParticlesBuffer[floatIndex++] = static_cast<float>(i->y());
-        m_ParticlesBuffer[floatIndex++] = static_cast<float>(i->z());
+        m_FluidParticlesBuffer[floatIndex++] = static_cast<float>(i->x());
+        m_FluidParticlesBuffer[floatIndex++] = static_cast<float>(i->y());
+        m_FluidParticlesBuffer[floatIndex++] = static_cast<float>(i->z());
     }
 
     glBindVertexArray(m_SpriteVAOID);
     glBindBuffer(GL_ARRAY_BUFFER, m_SpriteVBOID);
-    glBufferData(GL_ARRAY_BUFFER, m_FluidSpriteCount * 3 * sizeof(float), m_ParticlesBuffer.get(), GL_STREAM_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, m_FluidSpriteCount * 3 * sizeof(float), m_FluidParticlesBuffer.get(), GL_STREAM_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -444,17 +497,17 @@ void Simulator::RenderRenderable()
 
     uint32_t floatIndex = 0;
 
-    for (auto i = m_Particles->begin(); i != m_Particles->end(); ++i)
+    for (auto i = m_FluidParticles->begin(); i != m_FluidParticles->end(); ++i)
     {
-        m_ParticlesBuffer[floatIndex++] = static_cast<float>(i->x());
-        m_ParticlesBuffer[floatIndex++] = static_cast<float>(i->y());
-        m_ParticlesBuffer[floatIndex++] = static_cast<float>(i->z());
+        m_FluidParticlesBuffer[floatIndex++] = static_cast<float>(i->x());
+        m_FluidParticlesBuffer[floatIndex++] = static_cast<float>(i->y());
+        m_FluidParticlesBuffer[floatIndex++] = static_cast<float>(i->z());
     }
 
     glBindVertexArray(m_SpriteVAOID);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_SpriteVBOID);
-    glBufferData(GL_ARRAY_BUFFER, m_FluidSpriteCount * 3 * sizeof(float), m_ParticlesBuffer.get(), GL_STREAM_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, m_FluidSpriteCount * 3 * sizeof(float), m_FluidParticlesBuffer.get(), GL_STREAM_DRAW);
 
     glDrawArrays(GL_POINTS, 0, m_FluidSpriteCount);
 
@@ -472,7 +525,7 @@ void Simulator::DestroyRenderable()
 
 void Simulator::LoadObjects()
 {
-    m_Particles = std::make_shared<std::vector<Point>>();
+    m_FluidParticles = std::make_shared<std::vector<Point>>();
 
     for (float i = -3.5; i <= -0.5; i += 0.15)
     {
@@ -480,23 +533,23 @@ void Simulator::LoadObjects()
         {
             for (float k = 0.0; k <= 3.5; k += 0.15)
             {
-                m_Particles->push_back(Point(i, 2.5 + k, j));
+                m_FluidParticles->push_back(Point(i, 2.5 + k, j));
             }
         }
     }
 
-    Out::Log(pType::MESSAGE, "Sphere Count : %d", m_Particles->size());
+    Out::Log(pType::MESSAGE, "Sphere Count : %d", m_FluidParticles->size());
 
-    m_FluidSpriteCount = m_Particles->size();
+    m_FluidSpriteCount = m_FluidParticles->size();
 
-    m_ParticlesBuffer = std::make_unique<float[]>(m_FluidSpriteCount * 3);
+    m_FluidParticlesBuffer = std::make_unique<float[]>(m_FluidSpriteCount * 3);
 
-    FluidAPI_SetParticleBuffer(m_Particles);
+    FluidAPI_SetParticleBuffer(m_FluidParticles);
 }
 
 void Simulator::DestroyObjects()
 {
-    m_Particles->clear();
+    m_FluidParticles->clear();
 }
 
 void Simulator::Update()
@@ -508,6 +561,8 @@ void Simulator::Update()
     LastTime = NowTime;
 
     // Code Here
+
+    m_FrameTime = DeltaTime;
 
     FluidAPI_Step(DeltaTime);
 }
@@ -527,11 +582,15 @@ void Simulator::Render()
     RenderSkybox();
     RenderScene();
     RenderRenderable();
+
+    RenderUI();
 }
 
 void Simulator::Init()
 {
     InitGLFW();
+
+    InitUI();
 
     LoadObjects();
 
@@ -560,6 +619,8 @@ void Simulator::Exit()
     DestroySkybox();
     DestroyScene();
     DestroyRenderable();
+
+    DestroyUI();
 
     DestroyGLFW();
 }

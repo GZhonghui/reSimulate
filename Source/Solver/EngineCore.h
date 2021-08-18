@@ -9,6 +9,7 @@
 
 class Simulator
 {
+    // Render
 protected:
     GLFWwindow* m_MainWindow;
 
@@ -27,11 +28,16 @@ protected:
     uint32_t m_SpriteVAOID;
     uint32_t m_SpriteVBOID;
 
+    // UI
+protected:
+    double m_FrameTime;
+
+    // Import Libs
 protected:
     // For Fluid
     uint32_t m_FluidSpriteCount;
-    std::shared_ptr<std::vector<Point>> m_Particles;
-    std::unique_ptr<float[]> m_ParticlesBuffer;
+    std::shared_ptr<std::vector<Point>> m_FluidParticles;
+    std::unique_ptr<float[]> m_FluidParticlesBuffer;
 
     // For Rigidbody
 
@@ -44,6 +50,10 @@ public:
 protected:
     void InitGLFW();
     void DestroyGLFW();
+
+    void InitUI();
+    void RenderUI();
+    void DestroyUI();
 
     void LoadSkybox();
     void RenderSkybox();

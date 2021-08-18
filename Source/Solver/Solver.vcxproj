@@ -88,7 +88,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Support\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Support\Include\ImGui\backends;$(SolutionDir)Support\Include\ImGui;$(SolutionDir)Support\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -105,7 +105,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Support\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Support\Include\ImGui\backends;$(SolutionDir)Support\Include\ImGui;$(SolutionDir)Support\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -122,7 +122,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Support\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Support\Include\ImGui\backends;$(SolutionDir)Support\Include\ImGui;$(SolutionDir)Support\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -139,7 +139,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Support\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Support\Include\ImGui\backends;$(SolutionDir)Support\Include\ImGui;$(SolutionDir)Support\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -152,6 +152,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Support\Include\glad\glad.c" />
+    <ClCompile Include="..\Support\Include\ImGUI\backends\imgui_impl_glfw.cpp" />
+    <ClCompile Include="..\Support\Include\ImGUI\backends\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="..\Support\Include\ImGUI\imgui.cpp" />
+    <ClCompile Include="..\Support\Include\ImGUI\imgui_demo.cpp" />
+    <ClCompile Include="..\Support\Include\ImGUI\imgui_draw.cpp" />
+    <ClCompile Include="..\Support\Include\ImGUI\imgui_tables.cpp" />
+    <ClCompile Include="..\Support\Include\ImGUI\imgui_widgets.cpp" />
     <ClCompile Include="EngineCore.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
