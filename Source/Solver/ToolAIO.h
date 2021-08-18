@@ -32,6 +32,9 @@
 #define IMPORT_FLUID_API
 #include"../Fluid/Fluid.h"
 
+#define IMPORT_UNIVERSITY_CUDA_API
+#include"../UniversityCUDA/UniversityCUDA.h"
+
 enum class pType
 {
     MESSAGE, WARNING, ERROR
