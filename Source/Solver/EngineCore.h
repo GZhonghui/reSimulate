@@ -22,10 +22,6 @@ protected:
     uint32_t m_GroundVAOID;
     uint32_t m_GroundVBOID;
 
-    uint32_t m_MainShaderProgramID;
-    uint32_t m_MainVAOID;
-    uint32_t m_MainVBOID;
-
 public:
     Slmulator() = default;
     ~Slmulator() = default;
@@ -41,9 +37,6 @@ protected:
     void LoadScene();
     void RenderScene();
     void DestroyScene();
-
-    void InitOpenGL();
-    void DestroyOpenGL();
 
 protected:
     void Render();

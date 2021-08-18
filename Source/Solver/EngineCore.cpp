@@ -41,9 +41,7 @@ void Slmulator::LoadSkybox()
     int textureWidth, textureHeight, textureChannels;
     unsigned char* textureData;
 
-    stbi_set_flip_vertically_on_load(false);
-
-    const std::string SkyboxPath("../Asset/Creek/");
+    const std::string SkyboxPath("../Asset/Skybox/Creek/");
 
     textureData = stbi_load((SkyboxPath + "posX.jpg").c_str(), &textureWidth, &textureHeight, &textureChannels, 3);
     glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGB, textureWidth, textureHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData);
@@ -172,8 +170,6 @@ void Slmulator::LoadSkybox()
 
 void Slmulator::RenderSkybox()
 {
-    double SumTime = glfwGetTime() * 0.3;
-
     glDepthMask(GL_FALSE);
 
     glUseProgram(m_SkyboxShaderProgramID);
@@ -181,12 +177,11 @@ void Slmulator::RenderSkybox()
     auto projectionLocation = glGetUniformLocation(m_SkyboxShaderProgramID, "projection");
     auto viewLocation = glGetUniformLocation(m_SkyboxShaderProgramID, "view");
 
-    auto projection = glm::perspective(glm::radians(45.0f), 16.0f / 9, 0.1f, 100.0f);
-    auto view = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, 0.0f, (float)SumTime));
+    int screenWidth, screenHeight;
+    glfwGetFramebufferSize(m_MainWindow, &screenWidth, &screenHeight);
 
-    //view = glm::lookAt(glm::vec3(0, 0, 0), glm::vec3(std::cos(SumTime), 0, std::sin(SumTime)), glm::vec3(0, 1, 0));
-    view = glm::lookAt(glm::vec3(0, 0, 0), glm::vec3(0, 0, -1), glm::vec3(0, 1, 0));
-    view = glm::mat4(glm::mat3(view));
+    auto projection = glm::perspective(glm::radians(60.0f), (float)screenWidth / screenHeight, 0.1f, 100.0f);
+    auto view = glm::mat4(glm::mat3(glm::lookAt(glm::vec3(5, 2, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0))));
 
     glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));
@@ -213,84 +208,123 @@ void Slmulator::DestroySkybox()
 
 void Slmulator::LoadScene()
 {
+    glGenTextures(1, &m_GroundTextureID);
+    glBindTexture(GL_TEXTURE_2D, m_GroundTextureID);
 
-}
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-void Slmulator::RenderScene()
-{
+    const char* texturePath = "../Asset/Texture/Ground_02.jpg";
+    int textureWidth, textureHeight, textureChannels;
+    unsigned char* groundTextureData = stbi_load(texturePath, &textureWidth, &textureHeight, &textureChannels, 3);
 
-}
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureWidth, textureHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, groundTextureData);
+    glGenerateMipmap(GL_TEXTURE_2D);
 
-void Slmulator::DestroyScene()
-{
+    stbi_image_free(groundTextureData);
 
-}
+    Shader groundVertShader("./Shader/Ground.vert");
+    Shader groundFragShader("./Shader/Ground.frag");
 
-void Slmulator::InitOpenGL()
-{
-    Shader mainVertShader("./Shader/Main.vert");
-    Shader mainFragShader("./Shader/Main.frag");
+    const char* groundVertShaderSource = groundVertShader.m_ShaderCode.data();
+    const char* groundFragShaderSource = groundFragShader.m_ShaderCode.data();
 
-    const char* mainVertShaderSource = mainVertShader.m_ShaderCode.data();
-    const char* mainFragShaderSource = mainFragShader.m_ShaderCode.data();
-
-    uint32_t mainVertShaderID = glCreateShader(GL_VERTEX_SHADER);
-    uint32_t mainFragShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+    uint32_t groundVertShaderID = glCreateShader(GL_VERTEX_SHADER);
+    uint32_t groundFragShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
     int  compileSuccessfully;
     char compileInfo[512];
 
-    glShaderSource(mainVertShaderID, 1, &mainVertShaderSource, nullptr);
-    glCompileShader(mainVertShaderID);
+    glShaderSource(groundVertShaderID, 1, &groundVertShaderSource, nullptr);
+    glCompileShader(groundVertShaderID);
 
-    glGetShaderiv(mainVertShaderID, GL_COMPILE_STATUS, &compileSuccessfully);
+    glGetShaderiv(groundVertShaderID, GL_COMPILE_STATUS, &compileSuccessfully);
     if (!compileSuccessfully)
     {
-        glGetShaderInfoLog(mainVertShaderID, 512, NULL, compileInfo);
-        Out::Log(pType::WARNING, "Compile Failed : %s", compileInfo);
+        glGetShaderInfoLog(groundVertShaderID, 512, NULL, compileInfo);
+        Out::Log(pType::WARNING, "Ground Vert Shader Compile Failed : %s", compileInfo);
     }
 
-    glShaderSource(mainFragShaderID, 1, &mainFragShaderSource, nullptr);
-    glCompileShader(mainFragShaderID);
+    glShaderSource(groundFragShaderID, 1, &groundFragShaderSource, nullptr);
+    glCompileShader(groundFragShaderID);
 
-    glGetShaderiv(mainFragShaderID, GL_COMPILE_STATUS, &compileSuccessfully);
+    glGetShaderiv(groundFragShaderID, GL_COMPILE_STATUS, &compileSuccessfully);
     if (!compileSuccessfully)
     {
-        glGetShaderInfoLog(mainFragShaderID, 512, NULL, compileInfo);
-        Out::Log(pType::WARNING, "Compile Failed : %s", compileInfo);
+        glGetShaderInfoLog(groundFragShaderID, 512, NULL, compileInfo);
+        Out::Log(pType::WARNING, "Ground Frag Shader Compile Failed : %s", compileInfo);
     }
 
-    m_MainShaderProgramID = glCreateProgram();
-    glAttachShader(m_MainShaderProgramID, mainVertShaderID);
-    glAttachShader(m_MainShaderProgramID, mainFragShaderID);
-    glLinkProgram(m_MainShaderProgramID);
+    m_GroundShaderProgramID = glCreateProgram();
+    glAttachShader(m_GroundShaderProgramID, groundVertShaderID);
+    glAttachShader(m_GroundShaderProgramID, groundFragShaderID);
+    glLinkProgram(m_GroundShaderProgramID);
 
-    glDeleteShader(mainVertShaderID);
-    glDeleteShader(mainFragShaderID);
+    glDeleteShader(groundVertShaderID);
+    glDeleteShader(groundFragShaderID);
 
-    float vertices[] =
+    int repeatCount = 5;
+
+    float groundVertices[] =
     {
-        -0.5f, -0.5f, 0.0f,
-         0.5f, -0.5f, 0.0f,
-         0.0f,  0.5f, 0.0f
+         -5.0f, 0.0f, 5.0f, 0.0f, 0.0f,
+         -5.0f, 0.0f,-5.0f, 0.0f, repeatCount,
+          5.0f, 0.0f,-5.0f, repeatCount, repeatCount,
+
+         -5.0f, 0.0f, 5.0f, 0.0f, 0.0f,
+          5.0f, 0.0f,-5.0f, repeatCount, repeatCount,
+          5.0f, 0.0f, 5.0f, repeatCount, 0.0f
     };
 
-    glGenVertexArrays(1, &m_MainVAOID);
-    glGenBuffers(1, &m_MainVBOID);
+    glGenVertexArrays(1, &m_GroundVAOID);
+    glGenBuffers(1, &m_GroundVBOID);
 
-    glBindVertexArray(m_MainVAOID);
-    glBindBuffer(GL_ARRAY_BUFFER, m_MainVBOID);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glBindVertexArray(m_GroundVAOID);
+    glBindBuffer(GL_ARRAY_BUFFER, m_GroundVBOID);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(groundVertices), groundVertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 }
 
-void Slmulator::DestroyOpenGL()
+void Slmulator::RenderScene()
 {
-    glDeleteProgram(m_MainShaderProgramID);
+    glUseProgram(m_GroundShaderProgramID);
 
-    glDeleteVertexArrays(1, &m_MainVAOID);
-    glDeleteBuffers(1, &m_MainVBOID);
+    auto projectionLocation = glGetUniformLocation(m_GroundShaderProgramID, "projection");
+    auto viewLocation = glGetUniformLocation(m_GroundShaderProgramID, "view");
+
+    int screenWidth, screenHeight;
+    glfwGetFramebufferSize(m_MainWindow, &screenWidth, &screenHeight);
+
+    auto projection = glm::perspective(glm::radians(60.0f), (float)screenWidth / screenHeight, 0.1f, 100.0f);
+    auto view = glm::lookAt(glm::vec3(5, 2, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+
+    glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
+    glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));
+
+    glUniform1i(glGetUniformLocation(m_SkyboxShaderProgramID, "groundTexture"), 0);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_GroundTextureID);
+
+    glBindVertexArray(m_GroundVAOID);
+
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+
+void Slmulator::DestroyScene()
+{
+    glDeleteTextures(1, &m_GroundTextureID);
+    glDeleteProgram(m_GroundShaderProgramID);
+
+    glDeleteVertexArrays(1, &m_GroundVAOID);
+    glDeleteBuffers(1, &m_GroundVBOID);
 }
 
 void Slmulator::Render()
@@ -304,18 +338,12 @@ void Slmulator::Render()
     glClear(GL_COLOR_BUFFER_BIT);
 
     RenderSkybox();
-
-    glUseProgram(m_MainShaderProgramID);
-
-    glBindVertexArray(m_MainVAOID);
-    //glDrawArrays(GL_TRIANGLES, 0, 3);
+    RenderScene();
 }
 
 void Slmulator::Init()
 {
     InitGLFW();
-
-    InitOpenGL();
 
     LoadSkybox();
     LoadScene();
@@ -337,8 +365,6 @@ void Slmulator::Exit()
 {
     DestroySkybox();
     DestroyScene();
-
-    DestroyOpenGL();
 
     DestroyGLFW();
 }
