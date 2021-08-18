@@ -19,8 +19,6 @@ class RenderableSphere : Renderable
 {
 protected:
     double m_Radius;
-    int m_HeightSegment;
-    int m_RandSegment;
 
 public:
     RenderableSphere() = default;

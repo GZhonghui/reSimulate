@@ -12,6 +12,12 @@
     <Filter Include="Glad">
       <UniqueIdentifier>{c080baf9-5977-4207-9a2f-6581a385e93c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Fluid">
+      <UniqueIdentifier>{4f97d424-86c4-4489-a1cd-4c96718646c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImGui">
+      <UniqueIdentifier>{aad53139-a700-416e-9282-8e41aa2cd8a1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -42,6 +48,9 @@
     </ClInclude>
     <ClInclude Include="Renderable.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Fluid\Fluid.h">
+      <Filter>Fluid</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

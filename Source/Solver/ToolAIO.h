@@ -1,5 +1,8 @@
 #pragma once
 
+#pragma warning(disable:26495)
+#pragma warning(disable:26451)
+
 #include"Config.h"
 
 #include<unordered_map>
@@ -21,6 +24,9 @@
 
 #include<STB/stb_image.h>
 #include<STB/stb_image_write.h>
+
+#define IMPORT_FLUID_API
+#include"../Fluid/Fluid.h"
 
 enum class pType
 {

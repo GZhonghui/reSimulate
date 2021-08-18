@@ -268,17 +268,17 @@ void Simulator::LoadScene()
     glDeleteShader(groundVertShaderID);
     glDeleteShader(groundFragShaderID);
 
-    int repeatCount = 10;
+    int repeatCount = 8;
 
     float groundVertices[] =
     {
-         -10.0f, 0.0f, 10.0f, 0.0f, 0.0f,
-         -10.0f, 0.0f,-10.0f, 0.0f, repeatCount,
-          10.0f, 0.0f,-10.0f, repeatCount, repeatCount,
+         -8.0f, 0.0f, 8.0f, 0.0f, 0.0f,
+         -8.0f, 0.0f,-8.0f, 0.0f, repeatCount,
+          8.0f, 0.0f,-8.0f, repeatCount, repeatCount,
 
-         -10.0f, 0.0f, 10.0f, 0.0f, 0.0f,
-          10.0f, 0.0f,-10.0f, repeatCount, repeatCount,
-          10.0f, 0.0f, 10.0f, repeatCount, 0.0f
+         -8.0f, 0.0f, 8.0f, 0.0f, 0.0f,
+          8.0f, 0.0f,-8.0f, repeatCount, repeatCount,
+          8.0f, 0.0f, 8.0f, repeatCount, 0.0f
     };
 
     glGenVertexArrays(1, &m_GroundVAOID);
@@ -391,31 +391,21 @@ void Simulator::LoadRenderable()
     glDeleteShader(spriteVertShaderID);
     glDeleteShader(spriteFragShaderID);
 
-    std::vector<float> Sprits;
-
-    for (float i = -2.5; i <= 0.5; i += 0.15)
-    {
-        for (float j = -2.5; j <= 0.5; j += 0.15)
-        {
-            for (float k = 0.0; k <= 3; k += 0.15)
-            {
-                Sprits.push_back(i);
-                Sprits.push_back(2 + k);
-                Sprits.push_back(j);
-            }
-        }
-    }
-
-    Out::Log(pType::MESSAGE, "Sphere Count : %d", Sprits.size() / 3);
-
-    m_FluidSpriteCount = Sprits.size() / 3;
-
     glGenVertexArrays(1, &m_SpriteVAOID);
     glGenBuffers(1, &m_SpriteVBOID);
 
+    uint32_t floatIndex = 0;
+
+    for (auto i = m_Particles->begin(); i != m_Particles->end(); ++i)
+    {
+        m_ParticlesBuffer[floatIndex++] = static_cast<float>(i->x());
+        m_ParticlesBuffer[floatIndex++] = static_cast<float>(i->y());
+        m_ParticlesBuffer[floatIndex++] = static_cast<float>(i->z());
+    }
+
     glBindVertexArray(m_SpriteVAOID);
     glBindBuffer(GL_ARRAY_BUFFER, m_SpriteVBOID);
-    glBufferData(GL_ARRAY_BUFFER, Sprits.size() * sizeof(float), Sprits.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, m_FluidSpriteCount * 3 * sizeof(float), m_ParticlesBuffer.get(), GL_STREAM_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -452,7 +442,20 @@ void Simulator::RenderRenderable()
 
     glUniform1i(glGetUniformLocation(m_SpriteShaderProgramID, "spriteTexture"), 1);
 
+    uint32_t floatIndex = 0;
+
+    for (auto i = m_Particles->begin(); i != m_Particles->end(); ++i)
+    {
+        m_ParticlesBuffer[floatIndex++] = static_cast<float>(i->x());
+        m_ParticlesBuffer[floatIndex++] = static_cast<float>(i->y());
+        m_ParticlesBuffer[floatIndex++] = static_cast<float>(i->z());
+    }
+
     glBindVertexArray(m_SpriteVAOID);
+
+    glBindBuffer(GL_ARRAY_BUFFER, m_SpriteVBOID);
+    glBufferData(GL_ARRAY_BUFFER, m_FluidSpriteCount * 3 * sizeof(float), m_ParticlesBuffer.get(), GL_STREAM_DRAW);
+
     glDrawArrays(GL_POINTS, 0, m_FluidSpriteCount);
 
     // glDisable(GL_BLEND);
@@ -467,9 +470,46 @@ void Simulator::DestroyRenderable()
     glDeleteBuffers(1, &m_SpriteVBOID);
 }
 
+void Simulator::LoadObjects()
+{
+    m_Particles = std::make_shared<std::vector<Point>>();
+
+    for (float i = -3.5; i <= -0.5; i += 0.15)
+    {
+        for (float j = -3.5; j <= -0.5; j += 0.15)
+        {
+            for (float k = 0.0; k <= 3.5; k += 0.15)
+            {
+                m_Particles->push_back(Point(i, 2.5 + k, j));
+            }
+        }
+    }
+
+    Out::Log(pType::MESSAGE, "Sphere Count : %d", m_Particles->size());
+
+    m_FluidSpriteCount = m_Particles->size();
+
+    m_ParticlesBuffer = std::make_unique<float[]>(m_FluidSpriteCount * 3);
+
+    FluidAPI_SetParticleBuffer(m_Particles);
+}
+
+void Simulator::DestroyObjects()
+{
+    m_Particles->clear();
+}
+
 void Simulator::Update()
 {
+    static double LastTime = glfwGetTime();
 
+    double NowTime = glfwGetTime();
+    double DeltaTime = NowTime - LastTime;
+    LastTime = NowTime;
+
+    // Code Here
+
+    FluidAPI_Step(DeltaTime);
 }
 
 void Simulator::Render()
@@ -493,6 +533,8 @@ void Simulator::Init()
 {
     InitGLFW();
 
+    LoadObjects();
+
     LoadSkybox();
     LoadScene();
     LoadRenderable();
@@ -513,6 +555,8 @@ void Simulator::Loop()
 
 void Simulator::Exit()
 {
+    DestroyObjects();
+
     DestroySkybox();
     DestroyScene();
     DestroyRenderable();

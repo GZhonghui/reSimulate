@@ -30,6 +30,8 @@ protected:
 protected:
     // For Fluid
     uint32_t m_FluidSpriteCount;
+    std::shared_ptr<std::vector<Point>> m_Particles;
+    std::unique_ptr<float[]> m_ParticlesBuffer;
 
     // For Rigidbody
 
@@ -54,6 +56,9 @@ protected:
     void LoadRenderable();
     void RenderRenderable();
     void DestroyRenderable();
+
+    void LoadObjects();
+    void DestroyObjects();
 
 protected:
     void Update();
