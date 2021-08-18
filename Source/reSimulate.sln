@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.31515.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Solver", "Solver\Solver.vcxproj", "{020D5E81-4229-4935-8A64-4B3D9C0F0499}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Fluid", "Fluid\Fluid.vcxproj", "{D1F4D34C-1404-4CE0-9FB4-DA20F0CA186F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{020D5E81-4229-4935-8A64-4B3D9C0F0499}.Release|x64.Build.0 = Release|x64
 		{020D5E81-4229-4935-8A64-4B3D9C0F0499}.Release|x86.ActiveCfg = Release|Win32
 		{020D5E81-4229-4935-8A64-4B3D9C0F0499}.Release|x86.Build.0 = Release|Win32
+		{D1F4D34C-1404-4CE0-9FB4-DA20F0CA186F}.Debug|x64.ActiveCfg = Debug|x64
+		{D1F4D34C-1404-4CE0-9FB4-DA20F0CA186F}.Debug|x64.Build.0 = Debug|x64
+		{D1F4D34C-1404-4CE0-9FB4-DA20F0CA186F}.Debug|x86.ActiveCfg = Debug|Win32
+		{D1F4D34C-1404-4CE0-9FB4-DA20F0CA186F}.Debug|x86.Build.0 = Debug|Win32
+		{D1F4D34C-1404-4CE0-9FB4-DA20F0CA186F}.Release|x64.ActiveCfg = Release|x64
+		{D1F4D34C-1404-4CE0-9FB4-DA20F0CA186F}.Release|x64.Build.0 = Release|x64
+		{D1F4D34C-1404-4CE0-9FB4-DA20F0CA186F}.Release|x86.ActiveCfg = Release|Win32
+		{D1F4D34C-1404-4CE0-9FB4-DA20F0CA186F}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

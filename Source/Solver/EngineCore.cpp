@@ -2,7 +2,7 @@
 
 #include"EngineCore.h"
 
-void Slmulator::InitGLFW()
+void Simulator::InitGLFW()
 {
     glfwInit();
 
@@ -27,13 +27,13 @@ void Slmulator::InitGLFW()
     gladLoadGL();
 }
 
-void Slmulator::DestroyGLFW()
+void Simulator::DestroyGLFW()
 {
     glfwDestroyWindow(m_MainWindow);
     glfwTerminate();
 }
 
-void Slmulator::LoadSkybox()
+void Simulator::LoadSkybox()
 {
     glGenTextures(1, &m_SkyboxTextureID);
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_SkyboxTextureID);
@@ -168,7 +168,7 @@ void Slmulator::LoadSkybox()
     glEnableVertexAttribArray(0);
 }
 
-void Slmulator::RenderSkybox()
+void Simulator::RenderSkybox()
 {
     glDepthMask(GL_FALSE);
 
@@ -197,7 +197,7 @@ void Slmulator::RenderSkybox()
     glDepthMask(GL_TRUE);
 }
 
-void Slmulator::DestroySkybox()
+void Simulator::DestroySkybox()
 {
     glDeleteTextures(1, &m_SkyboxTextureID);
     glDeleteProgram(m_SkyboxShaderProgramID);
@@ -206,7 +206,7 @@ void Slmulator::DestroySkybox()
     glDeleteBuffers(1, &m_SkyboxVBOID);
 }
 
-void Slmulator::LoadScene()
+void Simulator::LoadScene()
 {
     glGenTextures(1, &m_GroundTextureID);
     glBindTexture(GL_TEXTURE_2D, m_GroundTextureID);
@@ -292,7 +292,7 @@ void Slmulator::LoadScene()
     glEnableVertexAttribArray(1);
 }
 
-void Slmulator::RenderScene()
+void Simulator::RenderScene()
 {
     glUseProgram(m_GroundShaderProgramID);
 
@@ -318,7 +318,7 @@ void Slmulator::RenderScene()
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void Slmulator::DestroyScene()
+void Simulator::DestroyScene()
 {
     glDeleteTextures(1, &m_GroundTextureID);
     glDeleteProgram(m_GroundShaderProgramID);
@@ -327,7 +327,12 @@ void Slmulator::DestroyScene()
     glDeleteBuffers(1, &m_GroundVBOID);
 }
 
-void Slmulator::Render()
+void Simulator::Update()
+{
+
+}
+
+void Simulator::Render()
 {
     int sceneWidth, sceneHeight;
     glfwGetFramebufferSize(m_MainWindow, &sceneWidth, &sceneHeight);
@@ -341,7 +346,7 @@ void Slmulator::Render()
     RenderScene();
 }
 
-void Slmulator::Init()
+void Simulator::Init()
 {
     InitGLFW();
 
@@ -349,19 +354,20 @@ void Slmulator::Init()
     LoadScene();
 }
 
-void Slmulator::Loop()
+void Simulator::Loop()
 {
     while (!glfwWindowShouldClose(m_MainWindow))
     {
         glfwPollEvents();
 
+        Update();
         Render();
 
         glfwSwapBuffers(m_MainWindow);
     }
 }
 
-void Slmulator::Exit()
+void Simulator::Exit()
 {
     DestroySkybox();
     DestroyScene();
@@ -371,7 +377,7 @@ void Slmulator::Exit()
 
 int SimulateCore()
 {
-    auto MainApp = std::make_unique<Slmulator>();
+    auto MainApp = std::make_unique<Simulator>();
 
     Out::Log(pType::MESSAGE, "Initing...");
     MainApp->Init();

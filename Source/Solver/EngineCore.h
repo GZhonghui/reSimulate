@@ -7,7 +7,7 @@
 
 #define SIMULATE_CORE SimulateCore()
 
-class Slmulator
+class Simulator
 {
 protected:
     GLFWwindow* m_MainWindow;
@@ -22,9 +22,16 @@ protected:
     uint32_t m_GroundVAOID;
     uint32_t m_GroundVBOID;
 
+protected:
+    // For Fluid
+
+    // For Rigidbody
+
+    // For NBody
+
 public:
-    Slmulator() = default;
-    ~Slmulator() = default;
+    Simulator() = default;
+    ~Simulator() = default;
 
 protected:
     void InitGLFW();
@@ -39,6 +46,7 @@ protected:
     void DestroyScene();
 
 protected:
+    void Update();
     void Render();
 
 public:
