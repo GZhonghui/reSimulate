@@ -180,8 +180,11 @@ void Simulator::RenderSkybox()
     int screenWidth, screenHeight;
     glfwGetFramebufferSize(m_MainWindow, &screenWidth, &screenHeight);
 
+    glm::vec3 cameraLocation(G_CAMERA_X, G_CAMERA_Y, G_CAMERA_Z);
+    glm::vec3 cameraTarget(G_TARGET_X, G_TARGET_Y, G_TARGET_Z);
+
     auto projection = glm::perspective(glm::radians(60.0f), (float)screenWidth / screenHeight, 0.1f, 100.0f);
-    auto view = glm::mat4(glm::mat3(glm::lookAt(glm::vec3(5, 2, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0))));
+    auto view = glm::mat4(glm::mat3(glm::lookAt(cameraLocation, cameraTarget, glm::vec3(0, 1, 0))));
 
     glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));
@@ -265,17 +268,17 @@ void Simulator::LoadScene()
     glDeleteShader(groundVertShaderID);
     glDeleteShader(groundFragShaderID);
 
-    int repeatCount = 5;
+    int repeatCount = 10;
 
     float groundVertices[] =
     {
-         -5.0f, 0.0f, 5.0f, 0.0f, 0.0f,
-         -5.0f, 0.0f,-5.0f, 0.0f, repeatCount,
-          5.0f, 0.0f,-5.0f, repeatCount, repeatCount,
+         -10.0f, 0.0f, 10.0f, 0.0f, 0.0f,
+         -10.0f, 0.0f,-10.0f, 0.0f, repeatCount,
+          10.0f, 0.0f,-10.0f, repeatCount, repeatCount,
 
-         -5.0f, 0.0f, 5.0f, 0.0f, 0.0f,
-          5.0f, 0.0f,-5.0f, repeatCount, repeatCount,
-          5.0f, 0.0f, 5.0f, repeatCount, 0.0f
+         -10.0f, 0.0f, 10.0f, 0.0f, 0.0f,
+          10.0f, 0.0f,-10.0f, repeatCount, repeatCount,
+          10.0f, 0.0f, 10.0f, repeatCount, 0.0f
     };
 
     glGenVertexArrays(1, &m_GroundVAOID);
@@ -302,8 +305,11 @@ void Simulator::RenderScene()
     int screenWidth, screenHeight;
     glfwGetFramebufferSize(m_MainWindow, &screenWidth, &screenHeight);
 
+    glm::vec3 cameraLocation(G_CAMERA_X, G_CAMERA_Y, G_CAMERA_Z);
+    glm::vec3 cameraTarget(G_TARGET_X, G_TARGET_Y, G_TARGET_Z);
+
     auto projection = glm::perspective(glm::radians(60.0f), (float)screenWidth / screenHeight, 0.1f, 100.0f);
-    auto view = glm::lookAt(glm::vec3(5, 2, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    auto view = glm::lookAt(cameraLocation, cameraTarget, glm::vec3(0, 1, 0));
 
     glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));
@@ -327,6 +333,140 @@ void Simulator::DestroyScene()
     glDeleteBuffers(1, &m_GroundVBOID);
 }
 
+void Simulator::LoadRenderable()
+{
+    glGenTextures(1, &m_SpriteTextureID);
+    glBindTexture(GL_TEXTURE_2D, m_SpriteTextureID);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    const char* texturePath = "../Asset/Texture/Sprite.png";
+    int textureWidth, textureHeight, textureChannels;
+    unsigned char* spriteTextureData = stbi_load(texturePath, &textureWidth, &textureHeight, &textureChannels, 3);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureWidth, textureHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, spriteTextureData);
+
+    stbi_image_free(spriteTextureData);
+
+    Shader spriteVertShader("./Shader/Sprite.vert");
+    Shader spriteFragShader("./Shader/Sprite.frag");
+
+    const char* spriteVertShaderSource = spriteVertShader.m_ShaderCode.data();
+    const char* spriteFragShaderSource = spriteFragShader.m_ShaderCode.data();
+
+    uint32_t spriteVertShaderID = glCreateShader(GL_VERTEX_SHADER);
+    uint32_t spriteFragShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+
+    int  compileSuccessfully;
+    char compileInfo[512];
+
+    glShaderSource(spriteVertShaderID, 1, &spriteVertShaderSource, nullptr);
+    glCompileShader(spriteVertShaderID);
+
+    glGetShaderiv(spriteVertShaderID, GL_COMPILE_STATUS, &compileSuccessfully);
+    if (!compileSuccessfully)
+    {
+        glGetShaderInfoLog(spriteVertShaderID, 512, NULL, compileInfo);
+        Out::Log(pType::WARNING, "Sprite Vert Shader Compile Failed : %s", compileInfo);
+    }
+
+    glShaderSource(spriteFragShaderID, 1, &spriteFragShaderSource, nullptr);
+    glCompileShader(spriteFragShaderID);
+
+    glGetShaderiv(spriteFragShaderID, GL_COMPILE_STATUS, &compileSuccessfully);
+    if (!compileSuccessfully)
+    {
+        glGetShaderInfoLog(spriteFragShaderID, 512, NULL, compileInfo);
+        Out::Log(pType::WARNING, "Sprite Frag Shader Compile Failed : %s", compileInfo);
+    }
+
+    m_SpriteShaderProgramID = glCreateProgram();
+    glAttachShader(m_SpriteShaderProgramID, spriteVertShaderID);
+    glAttachShader(m_SpriteShaderProgramID, spriteFragShaderID);
+    glLinkProgram(m_SpriteShaderProgramID);
+
+    glDeleteShader(spriteVertShaderID);
+    glDeleteShader(spriteFragShaderID);
+
+    std::vector<float> Sprits;
+
+    for (float i = -2.5; i <= 0.5; i += 0.15)
+    {
+        for (float j = -2.5; j <= 0.5; j += 0.15)
+        {
+            for (float k = 0.0; k <= 3; k += 0.15)
+            {
+                Sprits.push_back(i);
+                Sprits.push_back(2 + k);
+                Sprits.push_back(j);
+            }
+        }
+    }
+
+    Out::Log(pType::MESSAGE, "Sphere Count : %d", Sprits.size() / 3);
+
+    m_FluidSpriteCount = Sprits.size() / 3;
+
+    glGenVertexArrays(1, &m_SpriteVAOID);
+    glGenBuffers(1, &m_SpriteVBOID);
+
+    glBindVertexArray(m_SpriteVAOID);
+    glBindBuffer(GL_ARRAY_BUFFER, m_SpriteVBOID);
+    glBufferData(GL_ARRAY_BUFFER, Sprits.size() * sizeof(float), Sprits.data(), GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+}
+
+void Simulator::RenderRenderable()
+{
+    glEnable(GL_POINT_SPRITE);
+    glEnable(GL_PROGRAM_POINT_SIZE);
+    // glEnable(GL_BLEND);
+    // glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+    glUseProgram(m_SpriteShaderProgramID);
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, m_SpriteTextureID);
+
+    auto projectionLocation = glGetUniformLocation(m_SpriteShaderProgramID, "projection");
+    auto viewLocation = glGetUniformLocation(m_SpriteShaderProgramID, "view");
+
+    int screenWidth, screenHeight;
+    glfwGetFramebufferSize(m_MainWindow, &screenWidth, &screenHeight);
+
+    glm::vec3 cameraLocation(G_CAMERA_X, G_CAMERA_Y, G_CAMERA_Z);
+    glm::vec3 cameraTarget(G_TARGET_X, G_TARGET_Y, G_TARGET_Z);
+
+    auto projection = glm::perspective(glm::radians(60.0f), (float)screenWidth / screenHeight, 0.1f, 100.0f);
+    auto view = glm::lookAt(cameraLocation, cameraTarget, glm::vec3(0, 1, 0));
+
+    glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
+    glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));
+
+    glUniform3f(glGetUniformLocation(m_SpriteShaderProgramID, "cameraPos"), G_CAMERA_X, G_CAMERA_Y, G_CAMERA_Z);
+
+    glUniform1i(glGetUniformLocation(m_SpriteShaderProgramID, "spriteTexture"), 1);
+
+    glBindVertexArray(m_SpriteVAOID);
+    glDrawArrays(GL_POINTS, 0, m_FluidSpriteCount);
+
+    // glDisable(GL_BLEND);
+}
+
+void Simulator::DestroyRenderable()
+{
+    glDeleteTextures(1, &m_SpriteTextureID);
+    glDeleteProgram(m_SpriteShaderProgramID);
+
+    glDeleteVertexArrays(1, &m_SpriteVAOID);
+    glDeleteBuffers(1, &m_SpriteVBOID);
+}
+
 void Simulator::Update()
 {
 
@@ -339,11 +479,14 @@ void Simulator::Render()
 
     glViewport(0, 0, sceneWidth, sceneHeight);
 
+    glEnable(GL_DEPTH_TEST);
+
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     RenderSkybox();
     RenderScene();
+    RenderRenderable();
 }
 
 void Simulator::Init()
@@ -352,6 +495,7 @@ void Simulator::Init()
 
     LoadSkybox();
     LoadScene();
+    LoadRenderable();
 }
 
 void Simulator::Loop()
@@ -371,6 +515,7 @@ void Simulator::Exit()
 {
     DestroySkybox();
     DestroyScene();
+    DestroyRenderable();
 
     DestroyGLFW();
 }

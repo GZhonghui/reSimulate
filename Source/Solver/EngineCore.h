@@ -22,8 +22,14 @@ protected:
     uint32_t m_GroundVAOID;
     uint32_t m_GroundVBOID;
 
+    uint32_t m_SpriteTextureID;
+    uint32_t m_SpriteShaderProgramID;
+    uint32_t m_SpriteVAOID;
+    uint32_t m_SpriteVBOID;
+
 protected:
     // For Fluid
+    uint32_t m_FluidSpriteCount;
 
     // For Rigidbody
 
@@ -44,6 +50,10 @@ protected:
     void LoadScene();
     void RenderScene();
     void DestroyScene();
+
+    void LoadRenderable();
+    void RenderRenderable();
+    void DestroyRenderable();
 
 protected:
     void Update();
