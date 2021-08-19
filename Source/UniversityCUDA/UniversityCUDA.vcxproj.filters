@@ -9,7 +9,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="kernel.cu">
+    <CudaCompile Include="Backend.cu">
       <Filter>Source</Filter>
     </CudaCompile>
   </ItemGroup>
@@ -18,6 +18,12 @@
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="UniversityCUDA.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Backend.cuh">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="ToolAIO.h">
       <Filter>Header</Filter>
     </ClInclude>
   </ItemGroup>

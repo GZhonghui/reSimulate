@@ -23,10 +23,16 @@ protected:
     uint32_t m_GroundVAOID;
     uint32_t m_GroundVBOID;
 
+    // Fluid
     uint32_t m_SpriteTextureID;
     uint32_t m_SpriteShaderProgramID;
     uint32_t m_SpriteVAOID;
     uint32_t m_SpriteVBOID;
+
+    // University
+    uint32_t m_PlanetShaderProgramID;
+    uint32_t m_PlanetVAOID;
+    uint32_t m_PlanetVBOID;
 
     // UI
 protected:
@@ -41,7 +47,9 @@ protected:
 
     // For Rigidbody
 
-    // For NBody
+    // For University
+    uint32_t m_UniversityCUDAPlanetCount;
+    std::shared_ptr<std::vector<UniversityCUDA_API_Planet>> m_UniversityCUDAPlanets;
 
 public:
     Simulator() = default;
@@ -63,12 +71,19 @@ protected:
     void RenderScene();
     void DestroyScene();
 
-    void LoadRenderable();
-    void RenderRenderable();
-    void DestroyRenderable();
+    void LoadFluidRenderable();
+    void RenderFluidRenderable();
+    void DestroyFluidRenderable();
 
-    void LoadObjects();
-    void DestroyObjects();
+    void LoadFluidObjects();
+    void DestroyFluidObjects();
+
+    void LoadUniversityCUDAPlanetRenderable();
+    void RenderUniversityCUDAPlanetRenderable();
+    void DestroyUniversityCUDAPlanetRenderable();
+
+    void LoadUniversityCUDAPlanetObjects();
+    void DestroyUniversityCUDAPlanetObjects();
 
 protected:
     void Update();

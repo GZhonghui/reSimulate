@@ -68,9 +68,9 @@ void Simulator::RenderUI()
 
         ImGui::Text("FPS : %d (%lfs)", FPS, m_FrameTime);
 
-        ImGui::Separator();
+        // ImGui::Separator();
 
-        ImGui::Text("Particles Number : %d", m_FluidSpriteCount);
+        // ImGui::Text("Particles Number : %d", m_FluidSpriteCount);
 
         ImGui::End();
     }
@@ -386,7 +386,7 @@ void Simulator::DestroyScene()
     glDeleteBuffers(1, &m_GroundVBOID);
 }
 
-void Simulator::LoadRenderable()
+void Simulator::LoadFluidRenderable()
 {
     glGenTextures(1, &m_SpriteTextureID);
     glBindTexture(GL_TEXTURE_2D, m_SpriteTextureID);
@@ -464,7 +464,7 @@ void Simulator::LoadRenderable()
     glEnableVertexAttribArray(0);
 }
 
-void Simulator::RenderRenderable()
+void Simulator::RenderFluidRenderable()
 {
     glEnable(GL_POINT_SPRITE);
     glEnable(GL_PROGRAM_POINT_SIZE);
@@ -514,7 +514,7 @@ void Simulator::RenderRenderable()
     // glDisable(GL_BLEND);
 }
 
-void Simulator::DestroyRenderable()
+void Simulator::DestroyFluidRenderable()
 {
     glDeleteTextures(1, &m_SpriteTextureID);
     glDeleteProgram(m_SpriteShaderProgramID);
@@ -523,7 +523,7 @@ void Simulator::DestroyRenderable()
     glDeleteBuffers(1, &m_SpriteVBOID);
 }
 
-void Simulator::LoadObjects()
+void Simulator::LoadFluidObjects()
 {
     m_FluidParticles = std::make_shared<std::vector<Point>>();
 
@@ -547,9 +547,137 @@ void Simulator::LoadObjects()
     FluidAPI_SetParticleBuffer(m_FluidParticles);
 }
 
-void Simulator::DestroyObjects()
+void Simulator::DestroyFluidObjects()
 {
     m_FluidParticles->clear();
+}
+
+void Simulator::LoadUniversityCUDAPlanetRenderable()
+{
+    Shader planetVertShader("./Shader/Planet.vert");
+    Shader planetFragShader("./Shader/Planet.frag");
+
+    const char* planetVertShaderSource = planetVertShader.m_ShaderCode.data();
+    const char* planetFragShaderSource = planetFragShader.m_ShaderCode.data();
+
+    uint32_t planetVertShaderID = glCreateShader(GL_VERTEX_SHADER);
+    uint32_t planetFragShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+
+    int  compileSuccessfully;
+    char compileInfo[512];
+
+    glShaderSource(planetVertShaderID, 1, &planetVertShaderSource, nullptr);
+    glCompileShader(planetVertShaderID);
+
+    glGetShaderiv(planetVertShaderID, GL_COMPILE_STATUS, &compileSuccessfully);
+    if (!compileSuccessfully)
+    {
+        glGetShaderInfoLog(planetVertShaderID, 512, NULL, compileInfo);
+        Out::Log(pType::WARNING, "Planet Vert Shader Compile Failed : %s", compileInfo);
+    }
+
+    glShaderSource(planetFragShaderID, 1, &planetFragShaderSource, nullptr);
+    glCompileShader(planetFragShaderID);
+
+    glGetShaderiv(planetFragShaderID, GL_COMPILE_STATUS, &compileSuccessfully);
+    if (!compileSuccessfully)
+    {
+        glGetShaderInfoLog(planetFragShaderID, 512, NULL, compileInfo);
+        Out::Log(pType::WARNING, "Planet Frag Shader Compile Failed : %s", compileInfo);
+    }
+
+    m_PlanetShaderProgramID = glCreateProgram();
+    glAttachShader(m_PlanetShaderProgramID, planetVertShaderID);
+    glAttachShader(m_PlanetShaderProgramID, planetFragShaderID);
+    glLinkProgram(m_PlanetShaderProgramID);
+
+    glDeleteShader(planetVertShaderID);
+    glDeleteShader(planetFragShaderID);
+
+    glGenVertexArrays(1, &m_PlanetVAOID);
+    glGenBuffers(1, &m_PlanetVBOID);
+
+    glBindVertexArray(m_PlanetVAOID);
+    glBindBuffer(GL_ARRAY_BUFFER, m_PlanetVBOID);
+
+    glBufferData(GL_ARRAY_BUFFER, m_UniversityCUDAPlanetCount * 10 * sizeof(float), m_UniversityCUDAPlanets->data(), GL_STREAM_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(0);
+}
+
+void Simulator::RenderUniversityCUDAPlanetRenderable()
+{
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+    glEnable(GL_POINT_SPRITE);
+    glEnable(GL_PROGRAM_POINT_SIZE);
+
+    glUseProgram(m_PlanetShaderProgramID);
+
+    glBindVertexArray(m_PlanetVAOID);
+
+    glBindBuffer(GL_ARRAY_BUFFER, m_PlanetVBOID);
+
+    // Call every frame?
+    glBufferData(GL_ARRAY_BUFFER, m_UniversityCUDAPlanetCount * 10 * sizeof(float), m_UniversityCUDAPlanets->data(), GL_STREAM_DRAW);
+
+    glDrawArrays(GL_POINTS, 0, m_UniversityCUDAPlanetCount);
+
+    glDisable(GL_BLEND);
+}
+
+void Simulator::DestroyUniversityCUDAPlanetRenderable()
+{
+    glDeleteProgram(m_PlanetShaderProgramID);
+
+    glDeleteVertexArrays(1, &m_PlanetVAOID);
+    glDeleteBuffers(1, &m_PlanetVBOID);
+}
+
+void Simulator::LoadUniversityCUDAPlanetObjects()
+{
+    m_UniversityCUDAPlanets = std::make_shared<std::vector<UniversityCUDA_API_Planet>>();
+
+    UniversityCUDA_API_Planet newPlanet;
+
+    for (int i = 0; i < 20480; i += 1)
+    {
+        newPlanet.Acceleration = { 0,0,0 };
+
+        newPlanet.Mass = Uniform(10, 64);
+
+        if (i < 5120)
+        {
+            newPlanet.Location.x = static_cast<float>(Uniform(-300, -200));
+            newPlanet.Location.y = static_cast<float>(Uniform(-300, -200));
+            newPlanet.Location.z = static_cast<float>(Uniform(-300, -200));
+        }
+        else
+        {
+            newPlanet.Location.x = static_cast<float>(Uniform(500, 600));
+            newPlanet.Location.y = static_cast<float>(Uniform(500, 600));
+            newPlanet.Location.z = static_cast<float>(Uniform(500, 600));
+        }
+
+        newPlanet.Speed.x = static_cast<float>(Uniform(-100, 100));
+        newPlanet.Speed.y = static_cast<float>(Uniform(-100, 100));
+        newPlanet.Speed.z = static_cast<float>(Uniform(-100, 100));
+
+        m_UniversityCUDAPlanets->push_back(newPlanet);
+    }
+
+    m_UniversityCUDAPlanetCount = m_UniversityCUDAPlanets->size();
+
+    UniversityCUDA_API_Init(m_UniversityCUDAPlanets->data(), m_UniversityCUDAPlanets->size());
+}
+
+void Simulator::DestroyUniversityCUDAPlanetObjects()
+{
+    UniversityCUDA_API_Exit();
+
+    m_UniversityCUDAPlanets->clear();
 }
 
 void Simulator::Update()
@@ -564,7 +692,9 @@ void Simulator::Update()
 
     m_FrameTime = DeltaTime;
 
-    FluidAPI_Step(DeltaTime);
+    // FluidAPI_Step(DeltaTime);
+
+    // UniversityCUDA_API_Step(m_UniversityCUDAPlanets->data(), DeltaTime);
 }
 
 void Simulator::Render()
@@ -581,7 +711,10 @@ void Simulator::Render()
 
     RenderSkybox();
     RenderScene();
-    RenderRenderable();
+
+    // RenderFluidRenderable();
+
+    // RenderUniversityCUDAPlanetRenderable();
 
     RenderUI();
 }
@@ -592,11 +725,14 @@ void Simulator::Init()
 
     InitUI();
 
-    LoadObjects();
-
     LoadSkybox();
     LoadScene();
-    LoadRenderable();
+
+    // LoadFluidObjects();
+    // LoadFluidRenderable();
+
+    // LoadUniversityCUDAPlanetObjects();
+    // LoadUniversityCUDAPlanetRenderable();
 }
 
 void Simulator::Loop()
@@ -614,11 +750,14 @@ void Simulator::Loop()
 
 void Simulator::Exit()
 {
-    DestroyObjects();
-
     DestroySkybox();
     DestroyScene();
-    DestroyRenderable();
+
+    // DestroyFluidObjects();
+    // DestroyFluidRenderable();
+
+    // DestroyUniversityCUDAPlanetObjects();
+    // DestroyUniversityCUDAPlanetRenderable();
 
     DestroyUI();
 
@@ -627,6 +766,8 @@ void Simulator::Exit()
 
 int SimulateCore()
 {
+    srand((unsigned)time(nullptr));
+
     auto MainApp = std::make_unique<Simulator>();
 
     Out::Log(pType::MESSAGE, "Initing...");

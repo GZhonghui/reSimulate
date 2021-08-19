@@ -6,9 +6,22 @@
 #define UNIVERSITY_CUDA_API __declspec(dllexport)
 #endif
 
-#include<Eigen/Eigen>
+struct UniversityCUDA_API_Planet
+{
+    struct Vector
+    {
+        float x, y, z;
+    }; 
 
-#include<vector>
-#include<memory>
+    Vector Acceleration;
+    Vector Location;
+    Vector Speed;
 
-extern "C" UNIVERSITY_CUDA_API void Test();
+    float Mass;
+};
+
+extern "C" UNIVERSITY_CUDA_API void UniversityCUDA_API_Init(UniversityCUDA_API_Planet* dataBuffer, int bufferSize);
+
+extern "C" UNIVERSITY_CUDA_API void UniversityCUDA_API_Step(UniversityCUDA_API_Planet* dataBuffer, float DeltaTime);
+
+extern "C" UNIVERSITY_CUDA_API void UniversityCUDA_API_Exit();
