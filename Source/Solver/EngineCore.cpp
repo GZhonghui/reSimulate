@@ -716,6 +716,8 @@ void Simulator::Render()
 
     // RenderUniversityCUDAPlanetRenderable();
 
+    m_Sphere->Render();
+
     RenderUI();
 }
 
@@ -733,6 +735,8 @@ void Simulator::Init()
 
     // LoadUniversityCUDAPlanetObjects();
     // LoadUniversityCUDAPlanetRenderable();
+
+    m_Sphere = std::make_unique<RenderableSphere>(Point(0, 2, 0), 2, 64, 36);
 }
 
 void Simulator::Loop()

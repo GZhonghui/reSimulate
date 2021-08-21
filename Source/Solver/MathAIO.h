@@ -38,3 +38,13 @@ inline double Uniform(double Left, double Right)
 {
     return Left + (Right - Left) * Uniform();
 }
+
+inline glm::vec3 Convert(const Eigen::Vector3d& From)
+{
+    return glm::vec3(From.x(), From.y(), From.z());
+}
+
+inline Eigen::Vector3d Convert(const glm::vec3& From)
+{
+    return Eigen::Vector3d(From[0], From[1], From[2]);
+}
