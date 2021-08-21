@@ -47,7 +47,6 @@ protected:
     std::unique_ptr<float[]> m_FluidParticlesBuffer;
 
     // For Rigidbody
-    std::unique_ptr<RenderableSphere> m_Sphere;
 
     // For University
     uint32_t m_UniversityCUDAPlanetCount;

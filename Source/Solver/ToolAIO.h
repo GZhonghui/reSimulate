@@ -35,6 +35,9 @@
 #define IMPORT_UNIVERSITY_CUDA_API
 #include"../UniversityCUDA/UniversityCUDA.h"
 
+#define IMPORT_RIGIDBODY_API
+#include"../Rigidbody/Rigidbody.h"
+
 enum class pType
 {
     MESSAGE, WARNING, ERROR
