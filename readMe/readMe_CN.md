@@ -1,14 +1,29 @@
 # reSimulate
-
 ![reSimulate](reSimulate.png)
+---
+> More Projects from the reFamily [**reRender**](https://github.com/GZhonghui/reRender)/[**reEngine**](https://github.com/GZhonghui/reEngine)
 
-## reFamily
-- reRender
-- reEngine
+## About
+**reSimulate** is a Physical Simulater
 
-## 介绍
-reSimulate是一个物理解算器，底层使用C++编写，提供C++接口
+## Features
+### ✔CUDA Backend
+### ✔CPU Multi-Threaded Backend
+### ✔Rigid Body Simulation
+### ✔Fluid Simulation
+### ✔University Simulation
+### ✔Interacte with Customize Mesh
+### ✔Live Window Preview based on OpenGL
+### ✔ImGui
 
-## 特性
-- 流体模拟
-- 天体模拟
+## Credits
+> This Project Depends on the Following Libs
+* Assimp
+* Boost
+* CUDA
+* Eigen
+* Glad
+* GLFW
+* ImGui
+* OpenGL Core
+* STB
