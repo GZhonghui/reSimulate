@@ -22,7 +22,7 @@ void Simulator::InitGLFW()
     glfwSetWindowSizeLimits(m_MainWindow, G_WINDOW_WIDTH, G_WINDOW_HEIGHT, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
     glfwMakeContextCurrent(m_MainWindow);
-    glfwSwapInterval(1);
+    glfwSwapInterval(0);
 
     gladLoadGL();
 }
@@ -680,6 +680,37 @@ void Simulator::DestroyUniversityCUDAPlanetObjects()
     m_UniversityCUDAPlanets->clear();
 }
 
+void Simulator::LoadRigidbody()
+{
+    m_RigidbodyObjects.push_back(std::make_shared<RigidbodyAPISphere>(Point(0, 1.2, 0), 1, 256, 1));
+    m_RigidbodyRenderableObjects.push_back(std::make_shared<RenderableSphere>(Point(0, 1.2, 0), 1, 64, 36));
+
+    m_RigidbodyObjects.push_back(std::make_shared<RigidbodyAPISphere>(Point(3, 2, 3), 2, 512, 0.8));
+    m_RigidbodyRenderableObjects.push_back(std::make_shared<RenderableSphere>(Point(3, 2, 3), 0.8, 64, 36));
+
+    RigidbodyAPI_Init(&m_RigidbodyObjects);
+}
+
+void Simulator::RenderRigidbody()
+{
+    int sceneWidth, sceneHeight;
+    glfwGetFramebufferSize(m_MainWindow, &sceneWidth, &sceneHeight);
+
+    float R = 1.0f * sceneWidth / sceneHeight;
+
+    for (int i = 0; i < m_RigidbodyRenderableObjects.size(); i += 1)
+    {
+        m_RigidbodyRenderableObjects[i]->MoveTo(m_RigidbodyObjects[i]->getLocation());
+
+        m_RigidbodyRenderableObjects[i]->Render(R);
+    }
+}
+
+void Simulator::DestroyRigidbody()
+{
+    RigidbodyAPI_Exit();
+}
+
 void Simulator::Update()
 {
     static double LastTime = glfwGetTime();
@@ -695,12 +726,16 @@ void Simulator::Update()
     // FluidAPI_Step(DeltaTime);
 
     // UniversityCUDA_API_Step(m_UniversityCUDAPlanets->data(), DeltaTime);
+
+    RigidbodyAPI_Step(DeltaTime);
 }
 
 void Simulator::Render()
 {
     int sceneWidth, sceneHeight;
     glfwGetFramebufferSize(m_MainWindow, &sceneWidth, &sceneHeight);
+    
+    float R = 1.0f * sceneWidth / sceneHeight;
 
     glViewport(0, 0, sceneWidth, sceneHeight);
 
@@ -715,6 +750,8 @@ void Simulator::Render()
     // RenderFluidRenderable();
 
     // RenderUniversityCUDAPlanetRenderable();
+
+    RenderRigidbody();
 
     RenderUI();
 }
@@ -734,7 +771,7 @@ void Simulator::Init()
     // LoadUniversityCUDAPlanetObjects();
     // LoadUniversityCUDAPlanetRenderable();
     
-    RigidbodyAPI_Init(nullptr);
+    LoadRigidbody();
 }
 
 void Simulator::Loop()
@@ -761,7 +798,7 @@ void Simulator::Exit()
     // DestroyUniversityCUDAPlanetObjects();
     // DestroyUniversityCUDAPlanetRenderable();
 
-    RigidbodyAPI_Exit();
+    DestroyRigidbody();
 
     DestroyUI();
 

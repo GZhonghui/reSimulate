@@ -3,20 +3,23 @@
 #include"MathAIO.h"
 #include"ToolAIO.h"
 
-std::vector<std::shared_ptr<RigidbodyAPIObject>>* G_ObjBuffer;
+#include"RigidbodyCore.h"
+
+RigidbodyCore Core;
 
 extern "C" RIGIDBODY_API void RigidbodyAPI_Init(std::vector<std::shared_ptr<RigidbodyAPIObject>>* objBuffer)
 {
-    G_ObjBuffer = objBuffer;
+    Core.Init(objBuffer);
 }
 
 RIGIDBODY_API void RigidbodyAPI_Step(double DeltaTime)
 {
-    if (!G_ObjBuffer) return;
-
+    Core.UpdateAcceleration(DeltaTime);
+    Core.UpdateLocation(DeltaTime);
+    Core.UpdateSpeed(DeltaTime);
 }
 
 RIGIDBODY_API void RigidbodyAPI_Exit()
 {
-    // Nothing
+    Core.Exit();
 }

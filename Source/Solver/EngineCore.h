@@ -47,6 +47,8 @@ protected:
     std::unique_ptr<float[]> m_FluidParticlesBuffer;
 
     // For Rigidbody
+    std::vector<std::shared_ptr<RigidbodyAPIObject>> m_RigidbodyObjects;
+    std::vector<std::shared_ptr<RenderableSphere>> m_RigidbodyRenderableObjects;
 
     // For University
     uint32_t m_UniversityCUDAPlanetCount;
@@ -85,6 +87,10 @@ protected:
 
     void LoadUniversityCUDAPlanetObjects();
     void DestroyUniversityCUDAPlanetObjects();
+
+    void LoadRigidbody();
+    void RenderRigidbody();
+    void DestroyRigidbody();
 
 protected:
     void Update();

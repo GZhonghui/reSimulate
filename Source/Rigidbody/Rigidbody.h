@@ -21,26 +21,88 @@ class RigidbodyAPIObject
 protected:
     RigidbodyAPIObjectType m_Type;
 
+protected:
+    Eigen::Vector3d m_Center;
+    Eigen::Vector3d m_Speed;
+    Eigen::Vector3d m_Acceleration;
+
+    double m_Mass;
+    double m_K;
+
 public:
-    RigidbodyAPIObject(RigidbodyAPIObjectType Type) :m_Type(Type) {}
+    RigidbodyAPIObject(RigidbodyAPIObjectType Type, const Eigen::Vector3d& Center, double Mass, double K) :
+        m_Type(Type), m_Center(Center), m_Mass(Mass), m_K(K), m_Speed(0), m_Acceleration(0) {}
     virtual ~RigidbodyAPIObject() = default;
 
 public:
     RigidbodyAPIObjectType getType() const noexcept { return m_Type; }
+
+public:
+    Eigen::Vector3d getLocation() const { return m_Center; }
+    void setLocation(const Eigen::Vector3d& Location) { m_Center = Location; }
+    void Move(const Eigen::Vector3d& Offset) { m_Center += Offset; }
+
+public:
+    virtual Eigen::Vector3d getForce(std::shared_ptr<RigidbodyAPIObject> otherObj) = 0;
+    virtual Eigen::Vector3d getForceWithPlane() = 0;
+
+public:
+    friend class RigidbodyCore;
 };
 
 class RigidbodyAPISphere : public RigidbodyAPIObject
 {
 protected:
-    Eigen::Vector3d m_Center;
     double m_Radius;
-    double m_K;
 
 public:
-    RigidbodyAPISphere(const Eigen::Vector3d& Center, double Radius, double K) :
-        RigidbodyAPIObject(RigidbodyAPIObjectType::SPHERE),
-        m_Center(Center), m_Radius(Radius), m_K(K) {}
+    RigidbodyAPISphere(const Eigen::Vector3d& Center, double Mass, double K, double Radius) :
+        RigidbodyAPIObject(RigidbodyAPIObjectType::SPHERE, Center, Mass, K),
+        m_Radius(Radius) {}
     virtual ~RigidbodyAPISphere() = default;
+
+public:
+    virtual Eigen::Vector3d getForce(std::shared_ptr<RigidbodyAPIObject> otherObj)
+    {
+        if (!otherObj) return Eigen::Vector3d(0);
+
+        switch (otherObj->getType())
+        {
+        case RigidbodyAPIObjectType::SPHERE:
+        {
+            RigidbodyAPISphere* otherSphere = (RigidbodyAPISphere*)otherObj.get();
+            double Distance = (m_Center - otherSphere->m_Center).norm();
+
+            if (Distance < m_Radius + otherSphere->m_Radius)
+            {
+                double overL = m_Radius + otherSphere->m_Radius - Distance;
+                double thisL = overL * otherSphere->m_K / (m_K + otherSphere->m_K);
+
+                Eigen::Vector3d ForceDir = (m_Center - otherSphere->m_Center).normalized();
+                double ForceValue = thisL * m_K;
+
+                return ForceDir * ForceValue;
+            }
+        }break;
+        }
+
+        return Eigen::Vector3d(0);
+    }
+
+    virtual Eigen::Vector3d getForceWithPlane()
+    {
+        if (m_Center.y() > m_Radius) return Eigen::Vector3d(0);
+
+        // Upon the Plane
+
+        double overL = m_Radius - m_Center.y();
+        double ForceValue = m_K * overL;
+
+        return Eigen::Vector3d(0, 1, 0) * ForceValue;
+    }
+
+public:
+    friend class RigidbodyCore;
 };
 
 extern "C" RIGIDBODY_API void RigidbodyAPI_Init(std::vector<std::shared_ptr<RigidbodyAPIObject>>* objBuffer);

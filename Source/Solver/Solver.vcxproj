@@ -164,6 +164,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Fluid\Fluid.h" />
+    <ClInclude Include="..\Rigidbody\Rigidbody.h" />
     <ClInclude Include="..\UniversityCUDA\UniversityCUDA.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="EngineCore.h" />

@@ -76,5 +76,8 @@
     <ClInclude Include="..\UniversityCUDA\UniversityCUDA.h">
       <Filter>Import</Filter>
     </ClInclude>
+    <ClInclude Include="..\Rigidbody\Rigidbody.h">
+      <Filter>Import</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -12,7 +12,7 @@ public:
     virtual ~Renderable() = default;
 
 public:
-    virtual void Render() = 0;
+    virtual void Render(float R) = 0;
 };
 
 class RenderableSprite : public Renderable { /* Nothing */ };
@@ -172,25 +172,18 @@ public:
     }
 
 public:
-    virtual void Render()
+    virtual void Render(float R)
     {
         glUseProgram(m_ShaderProgramID);
-
-        int screenWidth = 1024, screenHeight = 768;
 
         glm::vec3 cameraLocation(G_CAMERA_X, G_CAMERA_Y, G_CAMERA_Z);
         glm::vec3 cameraTarget(G_TARGET_X, G_TARGET_Y, G_TARGET_Z);
 
-        auto projection = glm::perspective(glm::radians(60.0f), (float)screenWidth / screenHeight, 0.1f, 100.0f);
+        auto projection = glm::perspective(glm::radians(60.0f), R, 0.1f, 100.0f);
         auto view = glm::lookAt(cameraLocation, cameraTarget, glm::vec3(0, 1, 0));
 
         auto model = glm::mat4(1.0);
         model = glm::translate(model, Convert(m_Center));
-
-        static float Sum = 0;
-
-        model = glm::rotate(model, Sum, glm::vec3(1, 1, 1));
-        Sum += 0.01;
 
         glUniformMatrix4fv(glGetUniformLocation(m_ShaderProgramID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
         glUniformMatrix4fv(glGetUniformLocation(m_ShaderProgramID, "view"), 1, GL_FALSE, glm::value_ptr(view));
@@ -202,5 +195,16 @@ public:
         glDrawElements(GL_TRIANGLES, m_VerticesCount, GL_UNSIGNED_INT, 0);
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
+
+public:
+    void MoveTo(const Point& newLocation)
+    {
+        m_Center = newLocation;
+    }
+
+    void Move(const Direction& Offset)
+    {
+        m_Center += Offset;
     }
 };
