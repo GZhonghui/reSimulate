@@ -4,7 +4,7 @@
 > More Projects from the reFamily [**reRender**](https://github.com/GZhonghui/reRender)/[**reEngine**](https://github.com/GZhonghui/reEngine)
 
 ## About
-**reSimulate**是一个物理结算器
+**reSimulate**是一个物理解算器
 
 ## Features
 ### ✔CUDA Backend
