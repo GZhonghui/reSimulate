@@ -39,6 +39,9 @@ public:
 
             SumForce += (*m_ObjBuffer)[nowObj]->getForceWithPlane();
 
+            // Slow Down
+            SumForce -= (*m_ObjBuffer)[nowObj]->m_Speed * 0.9;
+
             (*m_ObjBuffer)[nowObj]->m_Acceleration = SumForce / (*m_ObjBuffer)[nowObj]->m_Mass;
             (*m_ObjBuffer)[nowObj]->m_Acceleration += Eigen::Vector3d(0, -1, 0) * G;
         }

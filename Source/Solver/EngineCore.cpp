@@ -682,11 +682,8 @@ void Simulator::DestroyUniversityCUDAPlanetObjects()
 
 void Simulator::LoadRigidbody()
 {
-    m_RigidbodyObjects.push_back(std::make_shared<RigidbodyAPISphere>(Point(0, 1.2, 0), 1, 256, 1));
-    m_RigidbodyRenderableObjects.push_back(std::make_shared<RenderableSphere>(Point(0, 1.2, 0), 1, 64, 36));
-
-    m_RigidbodyObjects.push_back(std::make_shared<RigidbodyAPISphere>(Point(3, 2, 3), 2, 512, 0.8));
-    m_RigidbodyRenderableObjects.push_back(std::make_shared<RenderableSphere>(Point(3, 2, 3), 0.8, 64, 36));
+    m_RigidbodyObjects.push_back(std::make_shared<RigidbodyAPISphere>(Point(0, 3, 0), 1, 256, 2.5));
+    m_RigidbodyRenderableObjects.push_back(std::make_shared<RenderableSphere>(Point(0, 3, 0), 2.5, 64, 36));
 
     RigidbodyAPI_Init(&m_RigidbodyObjects);
 }
