@@ -45,6 +45,7 @@ public:
 public:
     virtual Eigen::Vector3d getForce(std::shared_ptr<RigidbodyAPIObject> otherObj) = 0;
     virtual Eigen::Vector3d getForceWithPlane() = 0;
+    virtual Eigen::Vector3d getForceWithWall() = 0;
 
 public:
     friend class RigidbodyCore;
@@ -70,7 +71,7 @@ public:
         {
         case RigidbodyAPIObjectType::SPHERE:
         {
-            RigidbodyAPISphere* otherSphere = (RigidbodyAPISphere*)otherObj.get();
+            RigidbodyAPISphere* otherSphere = (RigidbodyAPISphere*)(otherObj.get());
             double Distance = (m_Center - otherSphere->m_Center).norm();
 
             if (Distance < m_Radius + otherSphere->m_Radius)
@@ -99,6 +100,33 @@ public:
         double ForceValue = m_K * overL;
 
         return Eigen::Vector3d(0, 1, 0) * ForceValue;
+    }
+
+    virtual Eigen::Vector3d getForceWithWall()
+    {
+        auto SumForce = Eigen::Vector3d(0, 0, 0);
+
+        const double Limit = 8.0;
+        
+        if (m_Center.x() + m_Radius > Limit)
+        {
+            SumForce += (m_Center.x() + m_Radius - Limit) * m_K * Eigen::Vector3d(-1, 0, 0);
+        }
+        else if (m_Center.x() - m_Radius < -Limit)
+        {
+            SumForce += (-Limit - (m_Center.x() - m_Radius)) * m_K * Eigen::Vector3d(1, 0, 0);
+        }
+
+        if (m_Center.z() + m_Radius > Limit)
+        {
+            SumForce += (m_Center.z() + m_Radius - Limit) * m_K * Eigen::Vector3d(0, 0, -1);
+        }
+        else if (m_Center.z() - m_Radius < -Limit)
+        {
+            SumForce += (-Limit - (m_Center.z() - m_Radius)) * m_K * Eigen::Vector3d(0, 0, 1);
+        }
+
+        return SumForce;
     }
 
 public:

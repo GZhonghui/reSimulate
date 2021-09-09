@@ -68,9 +68,23 @@ void Simulator::RenderUI()
 
         ImGui::Text("FPS : %d (%lfs)", FPS, m_FrameTime);
 
-        // ImGui::Separator();
+        if (false)
+        {
+            ImGui::Separator();
+            ImGui::Text("Particles Number : %d", m_FluidSpriteCount);
+        }
 
-        // ImGui::Text("Particles Number : %d", m_FluidSpriteCount);
+        if (true)
+        {
+            ImGui::Separator();
+            for (int i = 0; i < m_RigidbodyObjects.size(); ++i)
+            {
+                ImGui::Text("%.4lf,%.4lf,%.4lf",
+                    m_RigidbodyObjects[i]->getLocation().x(),
+                    m_RigidbodyObjects[i]->getLocation().y(),
+                    m_RigidbodyObjects[i]->getLocation().z());
+            }
+        }
 
         ImGui::End();
     }
@@ -682,8 +696,20 @@ void Simulator::DestroyUniversityCUDAPlanetObjects()
 
 void Simulator::LoadRigidbody()
 {
-    m_RigidbodyObjects.push_back(std::make_shared<RigidbodyAPISphere>(Point(0, 3, 0), 1, 256, 2.5));
-    m_RigidbodyRenderableObjects.push_back(std::make_shared<RenderableSphere>(Point(0, 3, 0), 2.5, 64, 36));
+    m_RigidbodyObjects.push_back(std::make_shared<RigidbodyAPISphere>(Point(0, 3, 0), 2, 2048, 1));
+    m_RigidbodyRenderableObjects.push_back(std::make_shared<RenderableSphere>(Point(0, 3, 0), 1, 64, 36));
+
+    m_RigidbodyObjects.push_back(std::make_shared<RigidbodyAPISphere>(Point(1.5, 5, 0), 2, 1024, 1));
+    m_RigidbodyRenderableObjects.push_back(std::make_shared<RenderableSphere>(Point(1.5, 5, 0), 1, 64, 36));
+
+    m_RigidbodyObjects.push_back(std::make_shared<RigidbodyAPISphere>(Point(0, 5, 2), 2, 1024, 2));
+    m_RigidbodyRenderableObjects.push_back(std::make_shared<RenderableSphere>(Point(0, 5, 2), 2, 64, 36));
+
+    m_RigidbodyObjects.push_back(std::make_shared<RigidbodyAPISphere>(Point(-1.5, 5, 2), 2, 1024, 2));
+    m_RigidbodyRenderableObjects.push_back(std::make_shared<RenderableSphere>(Point(-1.5, 5, 2), 2, 64, 36));
+
+    m_RigidbodyObjects.push_back(std::make_shared<RigidbodyAPISphere>(Point(1, 8, 0), 5, 1024, 3));
+    m_RigidbodyRenderableObjects.push_back(std::make_shared<RenderableSphere>(Point(1, 8, 0), 3, 64, 36));
 
     RigidbodyAPI_Init(&m_RigidbodyObjects);
 }
@@ -710,11 +736,18 @@ void Simulator::DestroyRigidbody()
 
 void Simulator::Update()
 {
+    static bool FirstUpdate = true;
     static double LastTime = glfwGetTime();
 
     double NowTime = glfwGetTime();
     double DeltaTime = NowTime - LastTime;
     LastTime = NowTime;
+
+    if (FirstUpdate)
+    {
+        FirstUpdate = false;
+        return;
+    }
 
     // Code Here
 

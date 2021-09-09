@@ -34,13 +34,32 @@ public:
             {
                 if (nowObj == targetObj) continue;
 
-                SumForce += (*m_ObjBuffer)[nowObj]->getForce((*m_ObjBuffer)[targetObj]);
+                // Why?
+                // (*m_ObjBuffer)[nowObj]->getForce((*m_ObjBuffer)[targetObj]);
+
+                RigidbodyAPISphere* otherSphere = (RigidbodyAPISphere*)((*m_ObjBuffer)[targetObj].get());
+                RigidbodyAPISphere* thisSphere = (RigidbodyAPISphere*)((*m_ObjBuffer)[nowObj].get());
+
+                double Distance = (otherSphere->getLocation() - thisSphere->getLocation()).norm();
+
+                if (Distance < thisSphere->m_Radius + otherSphere->m_Radius)
+                {
+                    double overL = thisSphere->m_Radius + otherSphere->m_Radius - Distance;
+                    double thisL = overL * otherSphere->m_K / (thisSphere->m_K + otherSphere->m_K);
+
+                    Eigen::Vector3d ForceDir = (thisSphere->m_Center - otherSphere->m_Center).normalized();
+                    double ForceValue = thisL * thisSphere->m_K;
+
+                    SumForce += ForceDir * ForceValue;
+                }
             }
 
             SumForce += (*m_ObjBuffer)[nowObj]->getForceWithPlane();
 
+            SumForce += (*m_ObjBuffer)[nowObj]->getForceWithWall();
+
             // Slow Down
-            SumForce -= (*m_ObjBuffer)[nowObj]->m_Speed * 0.9;
+            SumForce -= (*m_ObjBuffer)[nowObj]->m_Speed * 0.9 * (*m_ObjBuffer)[nowObj]->m_Mass;
 
             (*m_ObjBuffer)[nowObj]->m_Acceleration = SumForce / (*m_ObjBuffer)[nowObj]->m_Mass;
             (*m_ObjBuffer)[nowObj]->m_Acceleration += Eigen::Vector3d(0, -1, 0) * G;

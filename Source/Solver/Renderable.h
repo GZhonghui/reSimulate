@@ -38,8 +38,11 @@ public:
     RenderableSphere(const Point& Center, double Radius, uint32_t HeightSegments, uint32_t RandSegments) :
         m_Center(Center), m_Radius(Radius), m_HeightSegments(HeightSegments), m_RandSegments(RandSegments)
     {
-        Shader vertShader("./Shader/Sphere.vert");
-        Shader fragShader("./Shader/Sphere.frag");
+        //Shader vertShader("./Shader/Sphere.vert");
+        //Shader fragShader("./Shader/Sphere.frag");
+
+        Shader vertShader("./Shader/ViewSphere.vert");
+        Shader fragShader("./Shader/ViewSphere.frag");
 
         const char* vertShaderSource = vertShader.m_ShaderCode.data();
         const char* fragShaderSource = fragShader.m_ShaderCode.data();
@@ -174,6 +177,8 @@ public:
 public:
     virtual void Render(float R)
     {
+        glEnable(GL_DEPTH_TEST);
+
         glUseProgram(m_ShaderProgramID);
 
         glm::vec3 cameraLocation(G_CAMERA_X, G_CAMERA_Y, G_CAMERA_Z);
