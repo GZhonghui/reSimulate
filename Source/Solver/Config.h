@@ -1,5 +1,12 @@
 #pragma once
 
+enum class RunType
+{
+    FLUID, RIGIDBODY, UNIVERSITY_CUDA
+};
+
+const RunType G_RUN_TYPE = RunType::FLUID;
+
 const int G_WINDOW_WIDTH = 1024;
 const int G_WINDOW_HEIGHT = 768;
 
