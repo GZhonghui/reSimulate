@@ -3,21 +3,21 @@
 ---
 > More Projects from the reFamily [**reRender**](https://github.com/GZhonghui/reRender)/[**reEngine**](https://github.com/GZhonghui/reEngine)
 
-## About
+## 关于
 **reSimulate**是一个物理解算器
 
-## Features
-### ✔CUDA Backend
-### ✔CPU Multi-Threaded Backend
-### ✔Rigid Body Simulation
-### ✔Fluid Simulation
-### ✔University Simulation
-### ✔Interacte with Customize Mesh
-### ✔Live Window Preview based on OpenGL
+## 特性
+### ✔CUDA后端
+### ✔CPU多线程后端
+### ✔刚体模拟
+### ✔流体模拟
+### ✔天体模拟
+### ✔固液耦合
+### ✔实时预览
 ### ✔ImGui
 
-## Credits
-> This Project Depends on the Following Libs
+## 致谢
+> 本项目依赖于以下的库
 * Assimp
 * Boost
 * CUDA
