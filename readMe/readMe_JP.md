@@ -3,21 +3,21 @@
 ---
 > More Projects from the reFamily [**reRender**](https://github.com/GZhonghui/reRender)/[**reEngine**](https://github.com/GZhonghui/reEngine)
 
-## About
-**reSimulate** is a Physical Simulater
+## について
+**reSimulate**は物理シミュレーターです
 
-## Features
-### ✔CUDA Backend
-### ✔CPU Multi-Threaded Backend
-### ✔Rigid Body Simulation
-### ✔Fluid Simulation
-### ✔University Simulation
-### ✔Interacte with Customize Mesh
-### ✔Live Window Preview based on OpenGL
+## 特徴
+### ✔CUDAバックエンド
+### ✔CPUマルチスレッドバックエンド
+### ✔剛体シミュレーション
+### ✔流体シミュレーション
+### ✔天体シミュレーション
+### ✔固液カップリング
+### ✔リアルタイムプレビュー
 ### ✔ImGui
 
-## Credits
-> This Project Depends on the Following Libs
+## クレジット
+> このプロジェクトは以下のライブラリに依存しています
 * Assimp
 * Boost
 * CUDA
