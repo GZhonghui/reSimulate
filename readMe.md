@@ -14,9 +14,9 @@
 ### ✔CPU Multi-Threaded Backend
 ### ✔Rigid Body Simulation
 ### ✔Fluid Simulation
-### ✔University Simulation
-### ✔Interacte with Customize Mesh
-### ✔Live Window Preview based on OpenGL
+### ✔Celestial Body Simulation
+### ✔Solid-Liquid Coupling
+### ✔Live Preview based on OpenGL
 ### ✔ImGui
 
 ## Credits
