@@ -10,14 +10,17 @@
 **reSimulate** is a Physical Simulater
 
 ## Features
-### ✔CUDA Backend
 ### ✔CPU Multi-Threaded Backend
-### ✔Rigid Body Simulation
-### ✔Fluid Simulation
+### ✔Rigid Body Simulation: Basic Object
+### ✔Fluid Simulation: Lagrange
 ### ✔Celestial Body Simulation
-### ✔Solid-Liquid Coupling
 ### ✔Live Preview based on OpenGL
 ### ✔ImGui
+### 📌Rigid Body Simulation: Complex Object
+### 📌Fluid Simulation: Euler
+### 📌CUDA Backend
+### 📌Solid-Liquid Coupling
+
 
 ## Credits
 > This Project Depends on the Following Libs
